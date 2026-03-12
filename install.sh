@@ -174,11 +174,11 @@ usermod -aG sudo,adm,cdrom,plugdev,video,audio,input,netdev,docker piyush
 
 # UFW setup
 # ufw limit 22/tcp              # ssh
-ufw allow from 192.168.0.0/24 to any port 22 proto tcp #ssh local
+# ufw allow from 192.168.0.0/24 to any port 22 proto tcp #ssh local
 # ufw allow 80/tcp              # http
 # ufw allow 443/tcp             # https
 ufw allow from 192.168.0.0/24   #lan
-ufw deny 631/tcp                # cups stuff
+ufw deny 631/tcp                # remote printing
 ufw allow in on virbr0 to any port 67 proto udp
 ufw allow out on virbr0 to any port 68 proto udp
 ufw allow in on virbr0 to any port 53
@@ -188,7 +188,19 @@ ufw default deny incoming
 ufw default allow outgoing
 ufw enable
 ufw logging on
-sed -i -E 's/^#?\s*interface=.*/interface=virbr0/; s/^#?\s*bind-interfaces.*/bind-interfaces/' /etc/dnsmasq.conf
+
+# Bind dnsmasq to virbr0 only
+if [[ "$hardware" == "hardware" ]]; then
+  sed -i -E 's/^#?\s*interface=.*/interface=virbr0/; s/^#?\s*bind-interfaces.*/bind-interfaces/' /etc/dnsmasq.conf
+fi
+echo 'ListenAddress 127.0.0.1' >>/etc/ssh/sshd_config
+
+# disable llmnr
+mkdir -p /etc/systemd/resolved.conf.d
+tee /etc/systemd/resolved.conf.d/disable-llmnr.conf >/dev/null <<'EOF'
+[Resolve]
+LLMNR=no
+EOF
 
 # apparmour stuff
 # aa-enforce /etc/apparmor.d/Discord
