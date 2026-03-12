@@ -309,6 +309,10 @@ sudo -iu piyush nix profile add \
   nixpkgs#go \
   nixpkgs#uv \
   nixpkgs#prettier \
+  nixpkgs#golangci-lint \
+  nixpkgs#shfmt \
+  nixpkgs#goimports \
+  nixpkgs#go-migrate \
   nixpkgs#opencode \
   nixpkgs#javaPackages.compiler.temurin-bin.jre-17
 
