@@ -298,11 +298,11 @@ su - piyush -c '
 mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
 echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
 touch ~/.local/state/zsh/history ~/.local/state/bash/history
-ln -sf /home/piyush/Documents/personal/default/dotfiles/nix.conf /etc/nix/nix.conf
-ln -sf /home/piyush/Documents/personal/default/dotfiles/.bashrc ~/.bashrc
-ln -sf /home/piyush/Documents/personal/default/dotfiles/.zshrc ~/.zshrc
-ln -sf /home/piyush/Documents/personal/default/dotfiles/.config/starship.toml ~/.config
-ln -sf /home/piyush/Documents/personal/default/dotfiles/.config/nvim/ ~/.config
+ln -sf /home/piyush/Documents/projects/default/dotfiles/nix.conf /etc/nix/nix.conf
+ln -sf /home/piyush/Documents/projects/default/dotfiles/.bashrc ~/.bashrc
+ln -sf /home/piyush/Documents/projects/default/dotfiles/.zshrc ~/.zshrc
+ln -sf /home/piyush/Documents/projects/default/dotfiles/.config/starship.toml ~/.config
+ln -sf /home/piyush/Documents/projects/default/dotfiles/.config/nvim/ ~/.config
 
 source ~/.bashrc
 systemctl restart nix-daemon
