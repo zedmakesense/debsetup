@@ -2,109 +2,31 @@
 set -e
 
 kvantummanager --set Gruvbox
+
 gsettings set org.gnome.desktop.interface gtk-theme 'Gruvbox-Material-Dark'
-gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
+gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-declare -A gsettings_keys=(
-  ["org.virt-manager.virt-manager.new-vm firmware"]="uefi"
-  ["org.virt-manager.virt-manager.new-vm cpu-default"]="host-passthrough"
-  ["org.virt-manager.virt-manager.new-vm graphics-type"]="spice"
-)
 
-for key in "${!gsettings_keys[@]}"; do
-  schema="${key% *}"
-  subkey="${key#* }"
-  value="${gsettings_keys[$key]}"
+schema="org.virt-manager.virt-manager.new-vm"
 
-  if gsettings describe "$schema" "$subkey" >/dev/null; then
-    gsettings set "$schema" "$subkey" "$value"
-  fi
-done
-
-# Firefox user.js linking
-echo -n "/home/$USER/Documents/personal/default/dotfiles/ublock.txt" | wl-copy
-gh auth login
-dir=$(echo ~/.mozilla/firefox/*.default-esr)
-ln -sf ~/Documents/personal/default/dotfiles/user.js "$dir/user.js"
-cp -f ~/Documents/personal/default/dotfiles/book* "$dir/bookmarkbackups/"
-
-# Configure static IP, gateway, and custom DNS
-# sudo tee /etc/systemd/resolved.conf <<EOF
-# [Resolve]
-# DNS=8.8.8.8 8.8.4.4
-# EOF
-# sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
-# sudo tee /etc/NetworkManager/conf.d/dns.conf <<EOF
-# [main]
-# dns=none
-# systemd-resolved=false
-# EOF
-# sudo tee /etc/resolv.conf <<EOF
-# nameserver 1.1.1.1
-# nameserver 1.0.0.1
-# EOF
-# sudo systemctl restart NetworkManager
-
-bemoji --download all &
-# Nvim tools install
-foot -e nvim +MasonToolsInstall &
-foot -e sudo nvim +MasonToolsInstall &
-foot -e tmux &
-
-# Libvirt setup
-NEW="/home/piyush/Documents/libvirt"
-TMP="/tmp/default-pool.xml"
-
-# wrapper so we don't accidentally pass a quoted command string to sudo
-virsh_connect() { sudo virsh --connect qemu:///system "$@"; }
-
-if dpkg -s libvirt-daemon >/dev/null 2>&1; then
-  # ensure default network is autostarted if present; ignore errors if already set
-  virsh_connect net-autostart default 2>/dev/null || true
-  virsh_connect net-start default 2>/dev/null || true
-
-  sudo mkdir -p "$NEW"
-  sudo chown -R root:libvirt "$NEW"
-  sudo chmod -R 2775 "$NEW"
-
-  # remove any existing pools that point to this path (except keep 'default' for now)
-  while IFS= read -r p; do
-    [ -z "$p" ] && continue
-    if virsh_connect pool-dumpxml "$p" 2>/dev/null | grep -q "<path>${NEW}</path>"; then
-      if [ "$p" != "default" ]; then
-        virsh_connect pool-destroy "$p" || true
-        virsh_connect pool-undefine "$p" || true
-      fi
-    fi
-  done < <(virsh_connect pool-list --all --name 2>/dev/null || true)
-
-  # if a 'default' storage pool exists, replace it with our path
-  if virsh_connect pool-list --all 2>/dev/null | awk 'NR>2{print $1}' | grep -qx default; then
-    virsh_connect pool-destroy default 2>/dev/null || true
-    virsh_connect pool-undefine default 2>/dev/null || true
-  fi
-
-  # write pool XML with variable expansion
-  cat <<EOF | sudo tee "$TMP" >/dev/null
-<pool type='dir'>
-  <name>default</name>
-  <target><path>${NEW}</path></target>
-</pool>
-EOF
-
-  # define, start, refresh and autostart the pool
-  virsh_connect pool-define "$TMP" || true
-  virsh_connect pool-build default 2>/dev/null || true
-  virsh_connect pool-start default 2>/dev/null || true
-  virsh_connect pool-refresh default 2>/dev/null || true
-  virsh_connect pool-autostart default 2>/dev/null || true
-
-  # ensure files under NEW/images are world-readable where appropriate
-  sudo find "${NEW}" -type d -exec sudo chmod 2775 {} + || true
-  sudo find "${NEW}" -type f -exec sudo chmod 0644 {} + || true
-
-  echo "Libvirt pool configured at ${NEW}"
-else
-  echo "libvirt-daemon not installed; skip configuration" >&2
-  exit 1
+if gsettings list-schemas | grep -qx "$schema"; then
+  gsettings set $schema firmware 'uefi'
+  gsettings set $schema cpu-default 'host-passthrough'
+  gsettings set $schema graphics-type 'spice'
 fi
+
+cat "/home/$USER/Documents/projects/default/dotfiles/firefox/stylux-sidebar.css" | wl-copy
+echo -n "/home/$USER/Documents/projects/default/dotfiles/firefox/ublock.txt" | wl-copy
+dir=$(echo ~/.mozilla/firefox/*.default-release)
+ln -sf ~/Documents/projects/default/dotfiles/firefox/user.js "$dir/"
+ln -sf ~/Documents/projects/default/dotfiles/firefox/userChrome.css "$dir/chrome/"
+cp -f ~/Documents/projects/default/dotfiles/firefox/book* "$dir/bookmarkbackups/"
+
+ya pkg add bennyyip/gruvbox-dark
+ya pkg add dedukun/relative-motions
+ya pkg add yazi-rs/plugins:full-border
+ya pkg add yazi-rs/plugins:smart-paste
+ya pkg add yazi-rs/plugins:zoom
+ya pkg add yazi-rs/plugins:jump-to-char
+
+gh auth login
