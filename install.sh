@@ -326,12 +326,11 @@ sudo -iu piyush nix profile add \
   nixpkgs#prettier \
   nixpkgs#golangci-lint \
   nixpkgs#shfmt \
-  nixpkgs#goimports \
   nixpkgs#go-migrate \
   nixpkgs#opencode \
   nixpkgs#javaPackages.compiler.temurin-bin.jre-17
 
-nix profile add nixpkgs#yazi nixpkgs#neovim
+nix profile add nixpkgs#yazi
 
 sudo -iu piyush bemoji --download all >/dev/null 2>&1 || true
 
