@@ -330,8 +330,6 @@ sudo -iu piyush nix profile add \
   nixpkgs#opencode \
   nixpkgs#javaPackages.compiler.temurin-bin.jre-17
 
-nix profile add nixpkgs#yazi
-
 sudo -iu piyush bemoji --download all >/dev/null 2>&1 || true
 
 corepack enable
@@ -342,7 +340,7 @@ curl -s "https://api.github.com/repos/$REPO/releases/latest" |
   jq -r '.assets[].browser_download_url' |
   grep -E 'amd64.*\.deb$' |
   xargs -n1 wget
-apt install -y ~/debsetup/*rpm
+apt install -y ~/debsetup/*deb
 
 git clone --depth 1 https://gitlab.com/ananicy-cpp/ananicy-cpp.git
 cd ananicy-cpp
