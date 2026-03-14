@@ -148,7 +148,7 @@ extra_params="fsck.repair=yes zswap.enabled=0"
 
 sed -i '/^timeout /d;/^editor /d' /boot/efi/loader/loader.conf
 {
-  echo "timeout 3"
+  echo "timeout 2"
   echo "editor no"
 } >>/boot/efi/loader/loader.conf
 
@@ -173,19 +173,23 @@ fi
 usermod -aG sudo,adm,cdrom,plugdev,video,audio,input,netdev,docker piyush
 
 # UFW setup
-# ufw limit 22/tcp              # ssh
-# ufw allow from 192.168.0.0/24 to any port 22 proto tcp #ssh local
-# ufw allow 80/tcp              # http
-# ufw allow 443/tcp             # https
-ufw allow from 192.168.0.0/24 #lan
-ufw deny 631/tcp              # remote printing
+ufw allow in from 192.168.0.0/24
+ufw allow out to 192.168.0.0/24
+
+ufw deny 631/tcp
+
 ufw allow in on virbr0 to any port 67 proto udp
 ufw allow out on virbr0 to any port 68 proto udp
-ufw allow in on virbr0 to any port 53
-ufw allow out on virbr0 to any port 53
-ufw default allow routed
+ufw allow in on virbr0 to any port 53 proto udp
+ufw allow out on virbr0 to any port 53 proto udp
+ufw allow in on virbr0 to any port 53 proto tcp
+ufw allow out on virbr0 to any port 53 proto tcp
+ufw route allow in on virbr0 out on eth0 from 192.168.122.0/24 to any port 53 proto udp
+
+# ufw default allow routed
 ufw default deny incoming
 ufw default allow outgoing
+
 ufw enable
 ufw logging on
 
@@ -245,7 +249,7 @@ su - piyush -c '
 
   git clone https://github.com/zedmakesense/scripts.git ~/Documents/projects/default/scripts
   git clone https://github.com/zedmakesense/dotfiles.git ~/Documents/projects/default/dotfiles
-  git clone https://github.com/zedmakesense/fedsetup.git ~/Documents/projects/default/fedsetup
+  git clone https://github.com/zedmakesense/debsetup.git ~/Documents/projects/default/debsetup
   git clone https://github.com/zedmakesense/notes.git ~/Documents/projects/default/notes
   git clone https://github.com/zedmakesense/GruvboxTheme.git ~/Documents/projects/default/GruvboxTheme
 
@@ -267,7 +271,7 @@ su - piyush -c '
   done
   git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
   /home/piyush/Documents/projects/default/dotfiles/.config/tmux/plugins/tpm/scripts/install_plugins.sh
-  zoxide add /home/piyush/Documents/projects/default/fedsetup
+  zoxide add /home/piyush/Documents/projects/default/debsetup
   source ~/.bashrc
 
   mkdir -p ~/.local/share/fonts/iosevka
