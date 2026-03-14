@@ -19,7 +19,7 @@ fi
 cat "/home/$USER/Documents/projects/default/dotfiles/firefox/stylux-sidebar.css" | wl-copy
 echo -n "/home/$USER/Documents/projects/default/dotfiles/firefox/ublock.txt" | wl-copy
 dir=$(echo ~/.mozilla/firefox/*.default-release)
-ln -sf ~/Documents/projects/default/dotfiles/firefox/user.js "$dir/"
+ln -sf ~/Documents/projects/default/dotfiles/firefox/userESR.js "$dir/user.js"
 ln -sf ~/Documents/projects/default/dotfiles/firefox/userChrome.css "$dir/chrome/"
 cp -f ~/Documents/projects/default/dotfiles/firefox/book* "$dir/bookmarkbackups/"
 

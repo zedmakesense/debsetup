@@ -150,13 +150,13 @@ sed -i '/^timeout /d;/^editor /d' /boot/efi/loader/loader.conf
 {
   echo "timeout 3"
   echo "editor no"
-} >> /boot/efi/loader/loader.conf
+} >>/boot/efi/loader/loader.conf
 
 for f in /boot/efi/loader/entries/*; do
   opts=$(sed -n 's/^options[[:space:]]\+//p' "$f")
 
   for p in $extra_params; do
-    echo "$opts" | grep -Fq "$p" || \
+    echo "$opts" | grep -Fq "$p" ||
       sed -i "/^options[[:space:]]\+/ s/$/ $p/" "$f"
   done
 done
@@ -177,8 +177,8 @@ usermod -aG sudo,adm,cdrom,plugdev,video,audio,input,netdev,docker piyush
 # ufw allow from 192.168.0.0/24 to any port 22 proto tcp #ssh local
 # ufw allow 80/tcp              # http
 # ufw allow 443/tcp             # https
-ufw allow from 192.168.0.0/24   #lan
-ufw deny 631/tcp                # remote printing
+ufw allow from 192.168.0.0/24 #lan
+ufw deny 631/tcp              # remote printing
 ufw allow in on virbr0 to any port 67 proto udp
 ufw allow out on virbr0 to any port 68 proto udp
 ufw allow in on virbr0 to any port 53
@@ -285,6 +285,7 @@ su - piyush -c '
 
   rustup default stable
   cargo install typeman --no-default-features --features tui
+  go install golang.org/x/tools/cmd/goimports@latest
 
   podman create --name omni-tools --restart=no -p 127.0.0.1:1024:80 docker.io/iib0011/omni-tools:latest
   podman create --name bentopdf --restart=no -p 127.0.0.1:1025:8080 docker.io/bentopdf/bentopdf:latest
