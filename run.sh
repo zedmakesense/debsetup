@@ -31,4 +31,5 @@ ya pkg add yazi-rs/plugins:jump-to-char
 
 sudo nix profile add nixpkgs#yazi
 
+gh extension install dlvhdr/gh-dash
 gh auth login
