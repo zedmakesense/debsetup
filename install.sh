@@ -318,7 +318,6 @@ sudo -iu piyush nix profile add \
   nixpkgs#easyeffects \
   nixpkgs#rnnoise \
   nixpkgs#onlyoffice-desktopeditors \
-  nixpkgs#networkmanager_dmenu \
   nixpkgs#clipse \
   nixpkgs#caligula \
   nixpkgs#air \
